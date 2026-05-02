@@ -21,6 +21,7 @@
             --t-color: #fb923c;
             --n-color: #818cf8;
             --pending-color: #fb923c; 
+            --secondary-btn: #64748b;
         }
 
         body {
@@ -79,20 +80,21 @@
 
         .calendar-container { background: var(--card); padding: 15px; border-radius: 12px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        #monthDisplay, #monthDisplayMini, #monthDisplaySelection { font-weight: bold; }
+        #monthDisplay, #monthDisplaySelection, .monthDisplayInline { font-weight: bold; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .day { padding: 12px 0; background: #0f172a; border-radius: 6px; text-align: center; cursor: pointer; font-size: 14px; min-height: 45px; position: relative; }
         .day.selected { border: 1px solid var(--primary); }
-        .day.disabled-day { opacity: 0.4; cursor: not-allowed; background: #1e293b; }
         .day.header { color: #94a3b8; font-weight: bold; cursor: default; background: transparent; min-height: auto; }
-        .day-info { font-size: 11px; display: block; color: var(--primary); margin-top: 6px; height: 12px; }
         
-        .txt-danger { color: var(--danger) !important; font-weight: bold; }
-        .txt-accent { color: var(--accent) !important; font-weight: bold; }
+        .day-info { font-size: 13px; font-weight: 800; display: block; color: var(--primary); margin-top: 6px; height: 14px; }
+        .txt-danger { color: var(--danger) !important; font-weight: 900; opacity: 1 !important; }
         .txt-pending { color: var(--pending-color) !important; font-weight: bold; }
 
-        #saveStatus { text-align: center; font-size: 12px; margin-top: 15px; color: #94a3b8; height: 15px; }
+        .legend { display: flex; justify-content: center; gap: 10px; margin-top: 10px; font-size: 10px; color: #94a3b8; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -102,144 +104,85 @@
         .rotate-icon { transform: rotate(180deg); }
         .accordion-content { padding-bottom: 20px; }
 
-        .shift-item {
-            background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 8px;
-            border-left: 4px solid #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-        }
-        .shift-item.selected { border-left-color: var(--primary); background: #2d3a4f; }
-        .shift-item.disabled { opacity: 0.5; cursor: not-allowed; border-left-color: var(--pending-color); }
-        .shift-item span { font-size: 13px; color: #94a3b8; }
-        .shift-item b { display: block; color: white; font-size: 14px; }
+        .btn-fixed-bottom { margin-top: 35px; display: flex; flex-direction: column; gap: 8px; }
 
-        .btn-fixed-bottom {
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            width: calc(100% - 40px); max-width: 460px; z-index: 900;
-            display: flex; flex-direction: column; gap: 8px;
-        }
-
-        .return-option-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .return-option-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: nowrap; position: relative; }
         .mini-cal-btn { background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 8px; flex: 1; text-align: left; font-size: 13px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-action-opt { background: transparent; border: 1px solid #64748b; color: #64748b; width: 35px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; border-radius: 8px; }
-        .btn-action-opt.danger { color: var(--danger); border-color: var(--danger); }
+        
+        .action-stack { display: flex; flex-direction: column; gap: 4px; }
+        .btn-action-opt { background: transparent; border: 1px solid #64748b; color: #64748b; width: auto; min-width: 45px; height: 22px; padding: 0 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 4px; }
 
-        .modal {
-            display: none; position: fixed; z-index: 3000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); align-items: center; justify-content: center;
+        .inline-calendar-container { 
+            width: 100%; max-width: 280px; margin: 0 auto; 
+            background: var(--card); border-radius: 12px; border: 1px solid var(--primary); 
+            box-sizing: border-box; font-size: 11px;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
         }
-        .modal-content {
-            background: var(--card); padding: 25px; border-radius: 16px;
-            width: 85%; max-width: 380px; text-align: center;
+        .inline-calendar-container.active {
+            max-height: 400px;
+            opacity: 1;
+            margin: 5px auto 15px auto;
+            padding: 10px;
         }
+        .inline-calendar-container .day { padding: 6px 0; font-size: 11px; min-height: 30px; }
+        .inline-calendar-container .day-info { font-size: 9px; height: 10px; margin-top: 2px; }
 
-        .pending-card { 
-            background: #1e293b; border-radius: 12px; padding: 12px; margin-bottom: 12px; 
-            border: 1px solid #334155; transition: all 0.3s ease; position: relative;
-        }
-        .pending-card.incoherent { border-color: var(--danger); }
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card); padding: 25px; border-radius: 16px; width: 85%; max-width: 380px; text-align: center; }
+
+        .pending-card { background: #1e293b; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #334155; transition: all 0.3s ease; position: relative; }
         .pending-card h4 { margin: 0 0 12px 0; font-size: 13px; color: #94a3b8; text-align: left; padding-right: 50px; font-weight: normal; border-bottom: 1px solid #334155; padding-bottom: 8px;}
+        .pending-section { font-size: 12px; text-align: left; background: rgba(15, 23, 42, 0.5); padding: 8px; border-radius: 8px; margin-bottom: 5px; }
+        .pending-section b { display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+
+        .shift-btn { width: 100%; padding: 12px; border: 2px solid #334155; border-radius: 8px; background: #0f172a; color: white; font-weight: bold; margin-bottom: 8px; }
         
-        .pending-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+        .btn-highlight {
+            border: 2px solid var(--primary) !important;
+            color: var(--text) !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
-        .pending-section { 
-            font-size: 12px; 
-            text-align: left; 
-            background: rgba(15, 23, 42, 0.5);
-            padding: 8px;
-            border-radius: 8px;
-        }
-        .pending-section b { 
-            display: block; 
-            margin-bottom: 6px; 
-            text-transform: uppercase; 
-            font-size: 9px; 
-            letter-spacing: 0.5px;
-        }
+        .negotiate-box {
+    background: rgba(59, 130, 246, 0.15); 
+    padding: 25px 15px; /* Aumentamos el padding interno del cuadro */
+    border-radius: 12px;
+    border: 1px solid rgba(96, 165, 250, 0.4); 
+    margin: 20px 0;
+    text-align: center;
+}
 
-        .tab-content-shifts {
-            padding-left: 12px;
-            border-left: 1px solid #334155;
-            margin-left: 2px;
-        }
+.negotiate-title { 
+    font-size: 14px; 
+    margin-bottom: 35px; /* Espacio generoso entre el texto y los botones */
+    color: var(--text); 
+    font-weight: 600; 
+    display: block; /* Asegura que el margen se aplique correctamente */
+}
 
-        .pending-controls {
-            position: absolute; top: 10px; right: 10px; display: flex; gap: 8px;
+.negotiate-btns { 
+    display: flex; 
+    gap: 30px; /* Más separación entre el botón de Sí y el de No */
+    justify-content: center; 
+}
+.btn-neg-opt { 
+            width: 44px; height: 44px; border-radius: 10px; border: 1px solid #334155; 
+            background: #1e293b; font-size: 18px; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; color: #94a3b8;
         }
-        .icon-btn {
-            background: transparent; border: none; padding: 4px; cursor: pointer; 
-            font-size: 14px; width: auto; height: auto; color: #64748b;
-        }
-        .icon-btn:hover { color: white; }
-        .icon-btn.delete:hover { color: var(--danger); }
-        .icon-btn.confirm-delete { color: var(--danger); font-size: 10px; font-weight: bold; border: 1px solid var(--danger); border-radius: 4px; padding: 2px 5px; }
-
-        .pending-actions { display: flex; gap: 8px; margin-top: 5px; }
-        .btn-card-full { background: var(--primary); color: white; font-size: 12px; padding: 10px; }
-        
-        .result-box { margin-top: 12px; padding: 10px; border-radius: 8px; background: #0f172a; border: 1px dashed #334155; font-size: 12px; text-align: left; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .spinner {
-            display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.3);
-            border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 8px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .history-item {
-            background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 12px;
-        }
-        .history-item .date { color: #64748b; font-size: 10px; margin-bottom: 5px; display: block; }
-
-        .shift-btn { 
-            width: 100%; padding: 12px; border: 2px solid #334155; border-radius: 8px; 
-            background: #0f172a; color: white; font-weight: bold; margin-bottom: 8px;
-        }
-
-        .incoherence-alert {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .warning-dot {
-            color: var(--danger);
-            font-size: 12px;
-            margin-left: 4px;
-        }
-        
-        .match-row {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 12px 0;
-            border-bottom: 1px solid #334155;
-        }
-        .match-row:last-child { border-bottom: none; }
-        .match-text { line-height: 1.5; font-size: 12.5px; }
-        .btn-confirm-match { 
-            background: var(--accent); color: white; 
-            font-size: 11px; padding: 8px; border-radius: 6px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .btn-neg-opt.active-yes { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .btn-neg-opt.active-no { background: var(--danger); color: white; border-color: var(--danger); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
     </style>
 </head>
 <body>
 
 <header id="mainHeader" class="hidden">
     <div class="user-info">
-        <span id="userNameHeader" class="user-name">Usuario</span>
+        <span id="userNameHeader" class="user-name">Usuario .</span>
         <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
 </header>
@@ -260,70 +203,95 @@
     <div id="appView" class="hidden">
         <div id="tab-planilla" class="tab-content active">
             <h3 style="margin-top:0; text-align:center;">Mi planilla</h3>
-            
-            <div id="incoherenceContainer"></div>
-
             <div class="calendar-container">
                 <div class="calendar-header">
-                    <button onclick="changeMonth(-1)" style="width:auto; padding:5px 10px;">◀</button>
+                    <button onclick="changeMonth(-1)" style="width:auto; padding:5px 10px; font-size: 10px;">◀</button>
                     <span id="monthDisplay"></span>
-                    <button onclick="changeMonth(1)" style="width:auto; padding:5px 10px;">▶</button>
+                    <button onclick="changeMonth(1)" style="width:auto; padding:5px 10px; font-size: 10px;">▶</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
+                <div class="legend">
+                    <div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Mi planilla</div>
+                    <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Pedido</div>
+                </div>
             </div>
-            <p id="legendPlanilla" style="font-size:14px; text-align:center; margin-top:15px; line-height:1.6; color:#94a3b8;"></p>
-            <div id="saveStatus"></div>
         </div>
 
         <div id="tab-cambios" class="tab-content">
             <h3 style="margin-top:0; text-align:center;">Mis cambios</h3>
-            <div id="cambios-step-1">
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion('acc-nueva')">
-                        Turnos que me quiero quitar <span id="icon-acc-nueva">▼</span>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion('acc-nueva')">Gestor de cambios <span id="icon-acc-nueva">▼</span></div>
+                <div id="acc-nueva" class="accordion-content hidden">
+                    <div id="modoSelectors" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+                        <button id="btnModoQuitar" onclick="setGestionMode('quitar')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me quiero quitar un turno</button>
+                        <button id="btnModoOfrecer" onclick="setGestionMode('ofrecer')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me ofrezco a trabajar un turno</button>
                     </div>
-                    <div id="acc-nueva" class="accordion-content hidden">
-                        <p style="font-size:13px; color:#94a3b8; margin-bottom:15px;">Selecciona un máximo de 5 turnos por solicitud:</p>
-                        <div class="calendar-container">
-                            <div class="calendar-header">
-                                <button onclick="changeMonthSelection(-1)" style="width:auto; padding:5px 10px;">◀</button>
-                                <span id="monthDisplaySelection"></span>
-                                <button onclick="changeMonthSelection(1)" style="width:auto; padding:5px 10px;">▶</button>
+
+                    <div id="flow-quitar" class="hidden">
+                        <div id="cambios-step-1-interior">
+                            <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:5px; text-align:center;">¿Qué turno/s te quieres quitar?</p>
+                            <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 turnos por solicitud (puedes crear solicitudes ilimitadas).</p>
+                            <div class="calendar-container">
+                                <div class="calendar-header">
+                                    <button onclick="changeMonthSelection(-1)" style="width:auto; padding:5px 10px; font-size: 10px;">◀</button>
+                                    <span id="monthDisplaySelection"></span>
+                                    <button onclick="changeMonthSelection(1)" style="width:auto; padding:5px 10px; font-size: 10px;">▶</button>
+                                </div>
+                                <div class="calendar-grid" id="calendarSelectionGrid"></div>
+                                <div class="legend">
+                                    <div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Mi planilla</div>
+                                    <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Pedido</div>
+                                    <div class="legend-item hidden" id="legendSelection"><div class="dot" style="background:var(--pending-color)"></div> Selección</div>
+                                </div>
                             </div>
-                            <div class="calendar-grid" id="calendarSelectionGrid"></div>
+                            <div class="btn-fixed-bottom">
+                                <button id="btnContinuarCambio" onclick="irAStep2()" class="hidden">Continuar</button>
+                                <button onclick="setGestionMode(null)" style="background:transparent; color:#64748b; font-weight:normal; border:1px solid #334155; margin-top:10px;">Cancelar</button>
+                            </div>
                         </div>
-                        <p id="legendSeleccion" style="font-size:14px; text-align:center; margin-top:15px; line-height:1.6; color:#94a3b8;"></p>
-                        <p id="avisoMaximo" class="txt-danger hidden" style="text-align:center; font-size:13px; margin-top:10px; margin-bottom:-5px;">Has alcanzado el número máximo de turnos a quitar por solicitud</p>
-                        <button id="btnContinuarCambio" onclick="irAStep2()" class="hidden" style="margin-top: 15px;">Continuar</button>
+                        <div id="cambios-step-2-interior" class="hidden">
+                            <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:15px; text-align:center;">¿Qué turno/s puedo devolver?</p>
+                            
+                            <button id="btnOpcionesConcretas" onclick="seleccionarModalidad('concretas')" style="background:#0f172a; border:3px solid #64748b; color:#f8fafc; margin-bottom:12px; font-weight: bold; letter-spacing: 0.5px;">Opciones concretas</button>
+                            <button id="btnOpcionesNegociarMain" onclick="seleccionarModalidad('negociar')" style="background:#0f172a; border:3px solid #64748b; color:#f8fafc; margin-bottom:12px; font-weight: bold; letter-spacing: 0.5px;">Opciones a negociar</button>
+                            
+                            <div id="contenedorOpcionesDevolver" class="hidden"></div>
+                            <button id="btnAñadirOpcion" class="hidden" onclick="añadirLineaDevolucion()" style="background:transparent; border:1px dashed var(--secondary-btn); color:var(--secondary-btn); margin: 0 auto 15px auto; width: 150px; padding: 8px; font-size: 12px;">+ Añadir otra opción</button>
+                            
+                            <div id="flexibilidadExtra" class="hidden">
+                                <div class="negotiate-box">
+                                    <div id="negotiateTitle" class="negotiate-title">¿Esta opción es negociable?</div>
+                                    <div class="negotiate-btns">
+                                        <button id="btnNegSi" class="btn-neg-opt" onclick="setNegotiable(true)" title="Sí">✔</button>
+                                        <button id="btnNegNo" class="btn-neg-opt" onclick="setNegotiable(false)" title="No">✖</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-fixed-bottom">
+                                <button id="btnEnviarPropuestaQuitar" onclick="enviarPropuesta()">Enviar propuesta</button>
+                                <div style="display:flex; gap:10px; margin-top:10px;">
+                                    <button onclick="manejarAtrasStep2()" style="flex:1; background:transparent; color:#64748b; border:1px solid #334155; font-weight:normal; padding:10px; font-size: 13px;">Atrás</button>
+                                    <button onclick="setGestionMode(null)" style="flex:1; background:transparent; color:#64748b; border:1px solid #334155; font-weight:normal; padding:10px; font-size: 13px;">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion('acc-curso')">
-                        Peticiones en curso <span id="warn-acc-curso" class="warning-dot hidden">⚠️</span> <span id="icon-acc-curso">▼</span>
-                    </div>
-                    <div id="acc-curso" class="accordion-content hidden"></div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header" onclick="toggleAccordion('acc-historial')">
-                        Historial de cambios <span id="icon-acc-historial">▼</span>
-                    </div>
-                    <div id="acc-historial" class="accordion-content hidden">
-                        <div id="historyList" style="padding:10px;"></div>
+
+                    <div id="flow-ofrecer" class="hidden">
+                         <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:15px; text-align:center;">¿Qué turno te ofreces a cubrir?</p>
+                         <div id="contenedorOfrecer"></div>
+                         <div class="btn-fixed-bottom">
+                            <button id="btnEnviarPropuestaOfrecer" onclick="enviarPropuesta()" style="background:var(--accent);">Enviar propuesta</button>
+                            <button onclick="setGestionMode(null)" style="background:transparent; color:#64748b; border:1px solid #334155; font-weight:normal; margin-top:10px;">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="cambios-step-2" class="hidden">
-                <h3 id="step2Title" style="color:var(--primary); margin-top:0;">Devolución de turnos</h3>
-                <p id="infoSeleccionStep2" style="font-size:13px; color:#94a3b8; margin-bottom:15px; line-height: 1.5;"></p>
-                <div id="contenedorOpcionesDevolver"></div>
-                <button id="btnAñadirOpcion" onclick="añadirLineaDevolucion()" style="background:transparent; border:1px dashed var(--primary); color:var(--primary); margin-top:10px;">+ Añadir opción</button>
-                <p id="msgLimite" style="font-size:11px; color:var(--danger); text-align:center; margin-top:5px;" class="hidden">Has alcanzado el límite de opciones a devolver</p>
-                
-                <div class="btn-fixed-bottom">
-                    <button id="btnEnviarPropuesta" onclick="enviarPropuesta()">Enviar propuesta</button>
-                    <button id="btnAtras" onclick="volverAStep1()" style="background:#64748b;">Atras</button>
-                </div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion('acc-curso')">Peticiones en curso <span id="icon-acc-curso">▼</span></div>
+                <div id="acc-curso" class="accordion-content hidden"></div>
             </div>
         </div>
 
@@ -337,7 +305,7 @@
 
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="showTab('planilla')" id="nav-planilla">Mi planilla</div>
-            <div class="nav-item" onclick="showTab('cambios')" id="nav-cambios">Mis cambios <span id="nav-warn-cambios" class="warning-dot hidden">⚠️</span></div>
+            <div class="nav-item" onclick="showTab('cambios')" id="nav-cambios">Mis cambios</div>
             <div class="nav-item" onclick="showTab('horas')" id="nav-horas">Mis horas</div>
         </nav>
     </div>
@@ -346,729 +314,26 @@
 <div id="shiftModal" class="modal">
     <div class="modal-content">
         <h4 id="modalDateTitle">Turnos del día</h4>
-        <div class="shift-options" id="shiftOptionsContainer" style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
-            <button class="shift-btn" id="btn-M" onclick="toggleShiftType('M')">Mañana (M)</button>
-            <button class="shift-btn" id="btn-T" onclick="toggleShiftType('T')">Tarde (T)</button>
-            <button class="shift-btn" id="btn-N" onclick="toggleShiftType('N')">Noche (N)</button>
-        </div>
-        <button id="btnConfirmModal" onclick="closeModal()" style="background:var(--accent)">Confirmar</button>
-    </div>
-</div>
-
-<div id="miniCalModal" class="modal">
-    <div class="modal-content">
-        <div class="calendar-header">
-            <button onclick="changeMonthMini(-1)" style="width:auto; padding:5px 10px;">◀</button>
-            <span id="monthDisplayMini"></span>
-            <button onclick="changeMonthMini(1)" style="width:auto; padding:5px 10px;">▶</button>
-        </div>
-        <div class="calendar-grid" id="miniCalendarGrid"></div>
-        <p id="legendMiniCal" style="font-size:12px; text-align:center; margin-top:15px; line-height:1.4; color:#94a3b8;"></p>
-        <button onclick="document.getElementById('miniCalModal').style.display='none'" style="margin-top:15px; background:#64748b;">Cerrar</button>
+        <div class="shift-options" id="shiftOptionsContainer"></div>
+        <button onclick="closeModal()" style="background:var(--accent)">Confirmar</button>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAYfk9fmMsdD4LvwRqIUiVAqVbbZZ632Ns",
-        authDomain: "mis-cambios-de-turno.firebaseapp.com",
-        projectId: "mis-cambios-de-turno",
-        storageBucket: "mis-cambios-de-turno.firebasestorage.app",
-        messagingSenderId: "229870702919",
-        appId: "1:229870702919:web:9b9717acfd02f7e5affc62"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyAYfk9fmMsdD4LvwRqIUiVAqVbbZZ632Ns", authDomain: "mis-cambios-de-turno.firebaseapp.com", projectId: "mis-cambios-de-turno", storageBucket: "mis-cambios-de-turno.firebasestorage.app", messagingSenderId: "229870702919", appId: "1:229870702919:web:9b9717acfd02f7e5affc62" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let currentDocDate = new Date();
-    let currentMiniDate = new Date();
-    let currentSelectionDate = new Date();
-    let selectedDays = {}; 
-    let dateEditing = null;
-    let shiftsToQuit = [];
-    let returnOptions = [];
-    let currentSelectingOptionIdx = null;
-    let pendingRequests = [];
-    let historyChanges = [];
-    let editingRequestId = null;
-    let isRegisterMode = false;
-    let confirmDeleteId = null;
-    let isSelectionMode = false; 
+    let currentDocDate = new Date(), currentSelectionDate = new Date(), currentInlineDate = new Date();
+    let selectedDays = {}, shiftsToQuit = [], returnOptions = [], isNegotiable = null, modalMode = null, openInlineCalIdx = null, pendingRequests = [], activeGestionMode = null, dateEditing = null;
 
-    const horasTurno = { 'M': 7, 'T': 7, 'N': 10 };
-    const nombresTurno = { 'M': 'Mañana', 'T': 'Tarde', 'N': 'Noche' };
-    const ordenTurnos = { 'M': 1, 'T': 2, 'N': 3 };
-
-    function formatShortDate(dateStr, shift) {
-        if(!dateStr) return "";
-        const parts = dateStr.split('-');
-        const d = new Date(parts[0], parts[1]-1, parts[2]);
-        const weekday = new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(d);
-        const dayNum = parts[2];
-        const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(d);
-        const weekdayCapitalized = weekday.charAt(0).toUpperCase() + weekday.slice(1);
-        const monthCapitalized = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-        return `${weekdayCapitalized} ${dayNum} de ${monthCapitalized} (${shift})`;
-    }
-
-    function getReglas(numQuitar) {
-        let min;
-        switch(numQuitar) {
-            case 1: min = 3; break;
-            case 2: min = 5; break;
-            case 3: min = 6; break;
-            case 4: min = 8; break;
-            case 5: min = 10; break;
-            default: min = numQuitar * 2;
-        }
-        return { min: min, max: min + 3 };
-    }
-
-    async function handleAuth() {
-        const email = document.getElementById('authEmail').value;
-        const pass = document.getElementById('authPassword').value;
-        const btn = document.getElementById('btnMain');
-        if (!email || !pass) return;
-        btn.disabled = true;
-        const originalText = btn.innerText;
-        if (isRegisterMode) {
-            const n = document.getElementById('regNombre').value;
-            const a = document.getElementById('regApellidos').value;
-            if(!n || !a) {
-                btn.innerText = "Faltan datos";
-                btn.style.background = "var(--danger)";
-                setTimeout(() => { btn.disabled = false; btn.innerText = originalText; btn.style.background = ""; }, 2000);
-                return;
-            }
-            try {
-                const res = await auth.createUserWithEmailAndPassword(email, pass);
-                await db.collection("Usuarios").doc(res.user.uid).set({ nombre: n, apellidos: a, email });
-                await res.user.sendEmailVerification();
-                btn.style.background = "var(--accent)";
-                btn.innerHTML = `<span style="font-size:11px; color:white">¡Listo! Verifique su correo electrónico</span>`;
-            } catch (e) {
-                btn.innerText = "Error en el registro";
-                btn.style.background = "var(--danger)";
-                setTimeout(() => { btn.disabled = false; btn.innerText = originalText; btn.style.background = ""; }, 3000);
-            }
-        } else {
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-                if (!userCredential.user.emailVerified) {
-                    await auth.signOut();
-                    throw new Error("unverified");
-                }
-            } catch (e) {
-                btn.style.background = "var(--danger)";
-                btn.style.fontSize = "11px";
-                btn.innerHTML = `<span style="color:white">Usuario no registrado o sin verificar</span>`;
-                setTimeout(() => { btn.disabled = false; btn.innerText = originalText; btn.style.background = ""; }, 4000);
-            }
-        }
-    }
-
-    function toggleAuth() {
-        isRegisterMode = !isRegisterMode;
-        document.getElementById('registerFields').classList.toggle('hidden');
-        document.getElementById('btnMain').innerText = isRegisterMode ? "Crear cuenta" : "Entrar";
-    }
-
-    auth.onAuthStateChanged(async user => {
-        if (user && user.emailVerified) {
-            const doc = await db.collection("Usuarios").doc(user.uid).get();
-            if(doc.exists) document.getElementById('userNameHeader').innerText = doc.data().nombre;
-            document.getElementById('mainHeader').classList.remove('hidden');
-            document.getElementById('authView').classList.add('hidden');
-            document.getElementById('appView').classList.remove('hidden');
-            await loadUserData();
-        } else {
-            document.getElementById('mainHeader').classList.add('hidden');
-            document.getElementById('authView').classList.remove('hidden');
-            document.getElementById('appView').classList.add('hidden');
-        }
-    });
-
-    function logout() { auth.signOut(); location.reload(); }
-
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
-        document.getElementById('nav-' + tabId).classList.add('active');
-        if(tabId === 'planilla') { isSelectionMode = false; renderCalendar(); verificarIncoherencias(); }
-        if(tabId === 'cambios') {
-            isSelectionMode = true;
-            document.getElementById('cambios-step-1').classList.remove('hidden');
-            document.getElementById('cambios-step-2').classList.add('hidden');
-            editingRequestId = null; shiftsToQuit = []; returnOptions = [];
-            prepararStep1(); renderSolicitudesEnCurso(); renderHistorial();
-        }
-    }
-
-    function toggleAccordion(id) {
-        const content = document.getElementById(id);
-        const icon = document.getElementById('icon-' + id);
-        if (!content) return;
-        const isHidden = content.classList.contains('hidden');
-        document.querySelectorAll('.accordion-content').forEach(acc => acc.classList.add('hidden'));
-        document.querySelectorAll('.accordion-header span').forEach(i => i.classList.remove('rotate-icon'));
-        if(isHidden) { content.classList.remove('hidden'); icon.classList.add('rotate-icon'); }
-    }
-
-    function updateLegends() {
-        const hasPendingOther = pendingRequests.length > 0;
-        const hasCurrentSelection = shiftsToQuit.length > 0;
-        const spanAzul = `<span style="color:var(--primary); font-weight:bold;">azul</span>`;
-        const spanRojo = `<span style="color:var(--danger); font-weight:bold;">rojo</span>`;
-        const spanNaranja = `<span style="color:var(--pending-color); font-weight:bold;">naranja</span>`;
-        const legendPlanilla = document.getElementById('legendPlanilla');
-        if (legendPlanilla) {
-            if (hasPendingOther) {
-                legendPlanilla.innerHTML = `En ${spanAzul}, mi planilla actual.<br>En ${spanRojo}, turnos que me quiero quitar (ya solicitados).`;
-            } else {
-                legendPlanilla.innerHTML = `En ${spanAzul}, mi planilla actual.`;
-            }
-        }
-        const leyCompleta = `En ${spanAzul}, mi planilla actual.${hasCurrentSelection ? `<br>En ${spanNaranja}, seleccionados para esta solicitud.` : ''}${hasPendingOther ? `<br>En ${spanRojo}, turnos que me quiero quitar (ya solicitados).` : ''}`;
-        const legendSeleccion = document.getElementById('legendSeleccion');
-        if (legendSeleccion) legendSeleccion.innerHTML = leyCompleta;
-        const legendMini = document.getElementById('legendMiniCal');
-        if (legendMini) legendMini.innerHTML = leyCompleta;
-    }
-
-    function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        if (!grid) return; grid.innerHTML = "";
-        const y = currentDocDate.getFullYear(); const m = currentDocDate.getMonth();
-        let monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentDocDate);
-        document.getElementById('monthDisplay').innerText = monthName.charAt(0).toUpperCase() + monthName.slice(1).toLowerCase();
-        ['L','M','X','J','V','S','D'].forEach(d => grid.innerHTML += `<div class="day header">${d}</div>`);
-        let startOffset = (new Date(y, m, 1).getDay() === 0) ? 6 : new Date(y, m, 1).getDay() - 1;
-        for (let i = 0; i < startOffset; i++) grid.innerHTML += `<div></div>`;
-        const turnosSolicitados = new Set();
-        pendingRequests.forEach(req => req.quitar.forEach(s => turnosSolicitados.add(s.id)));
-        for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
-            const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            let turnos = selectedDays[dStr] || [];
-            turnos.sort((a, b) => ordenTurnos[a] - ordenTurnos[b]);
-            let htmlInfo = "";
-            turnos.forEach((t, idx) => {
-                const idTurno = `${dStr}_${t}`;
-                const claseColor = turnosSolicitados.has(idTurno) ? "txt-danger" : "";
-                htmlInfo += `<span class="${claseColor}">${t}</span>${idx < turnos.length - 1 ? ', ' : ''}`;
-            });
-            grid.innerHTML += `<div class="day ${turnos.length ? 'selected' : ''}" onclick="openShiftModal('${dStr}')">${d}<span class="day-info">${htmlInfo}</span></div>`;
-        }
-        actualizarRecuentoHoras();
-        updateLegends();
-    }
-
-    function verificarIncoherencias() {
-        const container = document.getElementById('incoherenceContainer');
-        const navWarn = document.getElementById('nav-warn-cambios');
-        const accWarn = document.getElementById('warn-acc-curso');
-        
-        container.innerHTML = "";
-        let globalIncoherence = false;
-        let incoherenciasEncontradas = [];
-        
-        pendingRequests.forEach((req, index) => {
-            const reqNum = pendingRequests.length - index;
-            let reqIncoherent = false;
-            req.quitar.forEach(turnoQ => {
-                const turnosDia = selectedDays[turnoQ.date] || [];
-                if (!turnosDia.includes(turnoQ.turno)) {
-                    reqIncoherent = true;
-                    globalIncoherence = true;
-                    incoherenciasEncontradas.push(`Solicitud #${reqNum}: El turno ${turnoQ.turno} del día ${turnoQ.date.split('-').reverse().join('/')} ya no está en tu planilla.`);
-                }
-            });
-            req.isIncoherent = reqIncoherent;
-        });
-
-        if (globalIncoherence) {
-            navWarn.classList.remove('hidden');
-            accWarn.classList.remove('hidden');
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'incoherence-alert';
-            alertDiv.innerHTML = `
-                <span>⚠️</span>
-                <div>
-                    <strong>Incoherencia detectada:</strong><br>
-                    ${incoherenciasEncontradas.join('<br>')}
-                    <br><small>Por favor, revisa o elimina estas solicitudes en "Mis cambios".</small>
-                </div>
-            `;
-            container.appendChild(alertDiv);
-        } else {
-            navWarn.classList.add('hidden');
-            accWarn.classList.add('hidden');
-        }
-    }
-
-    function renderCalendarSelection() {
-        const grid = document.getElementById('calendarSelectionGrid');
-        if (!grid) return; grid.innerHTML = "";
-        const y = currentSelectionDate.getFullYear(); const m = currentSelectionDate.getMonth();
-        let monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentSelectionDate);
-        document.getElementById('monthDisplaySelection').innerText = monthName.charAt(0).toUpperCase() + monthName.slice(1).toLowerCase();
-        ['L','M','X','J','V','S','D'].forEach(d => grid.innerHTML += `<div class="day header">${d}</div>`);
-        let startOffset = (new Date(y, m, 1).getDay() === 0) ? 6 : new Date(y, m, 1).getDay() - 1;
-        for (let i = 0; i < startOffset; i++) grid.innerHTML += `<div></div>`;
-        const turnosOtrasSolicitudes = new Set();
-        pendingRequests.forEach(req => { if (editingRequestId !== req.id) req.quitar.forEach(s => turnosOtrasSolicitudes.add(s.id)); });
-        for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
-            const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            let turnosEnPlanilla = selectedDays[dStr] || [];
-            turnosEnPlanilla.sort((a, b) => ordenTurnos[a] - ordenTurnos[b]);
-            let htmlInfo = ""; let tieneAlMenosUnoSeleccionable = false;
-            turnosEnPlanilla.forEach((t, idx) => {
-                const id = `${dStr}_${t}`; let claseColor = "";
-                if (turnosOtrasSolicitudes.has(id)) { claseColor = "txt-danger"; } 
-                else { tieneAlMenosUnoSeleccionable = true; if (shiftsToQuit.some(s => s.id === id)) claseColor = "txt-pending"; }
-                htmlInfo += `<span class="${claseColor}">${t}</span>${idx < turnosEnPlanilla.length - 1 ? ', ' : ''}`;
-            });
-            const dayDiv = document.createElement('div');
-            dayDiv.className = `day ${turnosEnPlanilla.length ? 'selected' : ''}`;
-            if (!tieneAlMenosUnoSeleccionable && turnosEnPlanilla.length > 0) dayDiv.style.opacity = "0.5";
-            dayDiv.innerHTML = `${d}<span class="day-info">${htmlInfo}</span>`;
-            if (turnosEnPlanilla.length > 0) { dayDiv.onclick = () => handleSelectionClick(dStr); }
-            grid.appendChild(dayDiv);
-        }
-        updateLegends();
-    }
-
-    function handleSelectionClick(dateStr) {
-        const turnosEnPlanilla = selectedDays[dateStr] || [];
-        const turnosOtrasSolicitudes = new Set();
-        pendingRequests.forEach(req => { if (editingRequestId !== req.id) req.quitar.forEach(s => turnosOtrasSolicitudes.add(s.id)); });
-        const turnosDisponibles = turnosEnPlanilla.filter(t => !turnosOtrasSolicitudes.has(`${dateStr}_${t}`));
-        if (turnosDisponibles.length === 1) {
-            const t = turnosDisponibles[0];
-            toggleSelectionShift(dateStr, t);
-            renderCalendarSelection();
-            actualizarBtnContinuar();
-        } else if (turnosDisponibles.length > 1) {
-            openShiftModal(dateStr);
-        }
-    }
-
-    function openShiftModal(date) {
-        dateEditing = date;
-        const parts = date.split('-');
-        const dayNum = parts[2];
-        const monthNum = parseInt(parts[1]);
-        const container = document.getElementById('shiftOptionsContainer');
-        const turnosEnPlanilla = selectedDays[date] || [];
-        if (isSelectionMode) {
-            document.getElementById('modalDateTitle').innerText = `¿Qué turno/s te quieres quitar del día ${dayNum}/${monthNum}?`;
-            const turnosOtrasSolicitudes = new Set();
-            pendingRequests.forEach(req => { if (editingRequestId !== req.id) req.quitar.forEach(s => turnosOtrasSolicitudes.add(s.id)); });
-            container.innerHTML = "";
-            ['M', 'T', 'N'].forEach(type => {
-                if (turnosEnPlanilla.includes(type)) {
-                    const id = `${date}_${type}`;
-                    const yaSolicitado = turnosOtrasSolicitudes.has(id);
-                    const seleccionadoParaQuitar = shiftsToQuit.some(s => s.id === id);
-                    const btn = document.createElement('button');
-                    btn.className = 'shift-btn';
-                    btn.innerText = (type === 'M' ? 'Mañana' : type === 'T' ? 'Tarde' : 'Noche') + ` (${type})`;
-                    if (yaSolicitado) {
-                        btn.style.borderColor = 'var(--danger)'; btn.style.background = 'rgba(239, 68, 68, 0.1)';
-                        btn.style.opacity = "0.6"; btn.disabled = true; btn.innerText += " (Ya solicitado)";
-                    } else if (seleccionadoParaQuitar) {
-                        btn.style.borderColor = 'var(--pending-color)'; btn.style.background = 'rgba(251, 146, 60, 0.2)';
-                    } else {
-                        btn.style.borderColor = '#334155'; btn.style.background = '#0f172a';
-                    }
-                    btn.onclick = () => toggleSelectionShift(date, type);
-                    container.appendChild(btn);
-                }
-            });
-            if (container.innerHTML === "") container.innerHTML = "<p style='font-size:13px; color:#94a3b8'>No tienes turnos o ya están solicitados.</p>";
-        } else {
-            document.getElementById('modalDateTitle').innerText = "Día " + dayNum;
-            container.innerHTML = `
-                <button class="shift-btn" id="btn-M" onclick="toggleShiftType('M')">Mañana (M)</button>
-                <button class="shift-btn" id="btn-T" onclick="toggleShiftType('T')">Tarde (T)</button>
-                <button class="shift-btn" id="btn-N" onclick="toggleShiftType('N')">Noche (N)</button>
-            `;
-            ['M', 'T', 'N'].forEach(type => {
-                const btn = document.getElementById('btn-' + type);
-                btn.style.borderColor = "#334155"; btn.style.background = "#0f172a";
-                if (turnosEnPlanilla.includes(type)) {
-                    if(type === 'M') { btn.style.borderColor = 'var(--m-color)'; btn.style.background = 'rgba(252, 211, 77, 0.2)'; }
-                    if(type === 'T') { btn.style.borderColor = 'var(--t-color)'; btn.style.background = 'rgba(251, 146, 60, 0.2)'; }
-                    if(type === 'N') { btn.style.borderColor = 'var(--n-color)'; btn.style.background = 'rgba(129, 140, 248, 0.2)'; }
-                }
-            });
-        }
-        document.getElementById('shiftModal').style.display = 'flex';
-    }
-
-    function toggleShiftType(type) {
-        if (!selectedDays[dateEditing]) selectedDays[dateEditing] = [];
-        const idx = selectedDays[dateEditing].indexOf(type);
-        if (idx > -1) selectedDays[dateEditing].splice(idx, 1); else selectedDays[dateEditing].push(type);
-        openShiftModal(dateEditing);
-    }
-
-    function toggleSelectionShift(dateStr, t) {
-        const id = `${dateStr}_${t}`;
-        const idx = shiftsToQuit.findIndex(s => s.id === id);
-        const aviso = document.getElementById('avisoMaximo');
-        if (idx > -1) {
-            shiftsToQuit.splice(idx, 1);
-            aviso.classList.add('hidden');
-        } 
-        else {
-            if (shiftsToQuit.length < 5) {
-                shiftsToQuit.push({ id, date: dateStr, turno: t });
-                aviso.classList.add('hidden');
-            } else {
-                aviso.classList.remove('hidden');
-            }
-        }
-        if (document.getElementById('shiftModal').style.display === 'flex') openShiftModal(dateStr);
-    }
-
-    async function closeModal() {
-        if (isSelectionMode) { renderCalendarSelection(); actualizarBtnContinuar(); } 
-        else { 
-            if (selectedDays[dateEditing]?.length === 0) delete selectedDays[dateEditing]; 
-            renderCalendar(); 
-            verificarIncoherencias(); 
-            await autoSavePlanilla(); 
-        }
-        document.getElementById('shiftModal').style.display = 'none';
-    }
-
-    let saveTimer = null;
-    async function autoSavePlanilla() {
-        if (!auth.currentUser) return;
-        const s = document.getElementById('saveStatus');
-        try {
-            await db.collection("Planillas").doc(auth.currentUser.uid).set({ 
-                turnosDetallados: selectedDays, solicitudesEnCurso: pendingRequests, historial: historyChanges || []
-            }, { merge: true });
-            if (saveTimer) clearInterval(saveTimer);
-            let timeLeft = 3; s.style.color = "var(--accent)"; s.innerText = `Cambios guardados (${timeLeft}s)`;
-            saveTimer = setInterval(() => {
-                timeLeft--; if (timeLeft <= 0) { s.innerText = ""; clearInterval(saveTimer); } 
-                else { s.innerText = `Cambios guardados (${timeLeft}s)`; }
-            }, 1000);
-        } catch (e) { s.innerText = "Error al guardar"; }
-    }
-
-    function prepararStep1() { renderCalendarSelection(); actualizarBtnContinuar(); }
-
-    function actualizarBtnContinuar() {
-        const btn = document.getElementById('btnContinuarCambio');
-        if (shiftsToQuit.length > 0) { btn.classList.remove('hidden'); btn.disabled = false; } 
-        else { btn.classList.add('hidden'); }
-    }
-
-    function irAStep2() {
-        document.getElementById('cambios-step-1').classList.add('hidden');
-        document.getElementById('cambios-step-2').classList.remove('hidden');
-        const reglas = getReglas(shiftsToQuit.length);
-        if (!editingRequestId) {
-            document.getElementById('step2Title').innerText = "Devolución de turnos";
-            document.getElementById('contenedorOpcionesDevolver').innerHTML = "";
-            returnOptions = []; for(let i=0; i < reglas.min; i++) añadirLineaDevolucion();
-        } else { document.getElementById('step2Title').innerText = "Editando solicitud"; }
-        document.getElementById('infoSeleccionStep2').innerHTML = `Has seleccionado <span class="txt-danger">${shiftsToQuit.length} turno${shiftsToQuit.length > 1 ? 's' : ''} a quitar</span>. Indique entre <span class="txt-accent">${reglas.min} y ${reglas.max} opciones para devolver</span>:`;
-        renderizarLineasDevolucion();
-    }
-
-    function volverAStep1() {
-        document.getElementById('cambios-step-2').classList.add('hidden');
-        document.getElementById('cambios-step-1').classList.remove('hidden');
-        prepararStep1();
-    }
-
-    function añadirLineaDevolucion() {
-        const reglas = getReglas(shiftsToQuit.length);
-        if (returnOptions.length < reglas.max) { returnOptions.push({ date: null, shift: null }); renderizarLineasDevolucion(); }
-    }
-
-    function renderizarLineasDevolucion() {
-        const container = document.getElementById('contenedorOpcionesDevolver');
-        container.innerHTML = ""; const reglas = getReglas(shiftsToQuit.length);
-        const setQuitarIds = new Set(shiftsToQuit.map(s => s.id));
-        returnOptions.forEach((opt, idx) => {
-            const row = document.createElement('div');
-            row.className = 'return-option-row';
-            let btnLabel = opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día";
-            const isExtra = idx >= reglas.min;
-            let selectHtml = `<select style="flex:0.4; margin:0;" onchange="returnOptions[${idx}].shift = this.value; actualizarEstadoPropuesta();">
-                <option value="" disabled ${!opt.shift ? 'selected' : ''}>Turno</option>`;
-            ['M', 'T', 'N'].forEach(turno => {
-                let isDisabled = false;
-                if (opt.date) {
-                    const idTurno = `${opt.date}_${turno}`;
-                    const enPlanilla = selectedDays[opt.date]?.includes(turno);
-                    const meLoQuitoEnEsta = setQuitarIds.has(idTurno);
-                    if (enPlanilla && !meLoQuitoEnEsta) isDisabled = true;
-                    if (meLoQuitoEnEsta) isDisabled = true;
-                    if (returnOptions.some((other, oIdx) => oIdx !== idx && other.date === opt.date && other.shift === turno)) isDisabled = true;
-                }
-                selectHtml += `<option value="${turno}" ${opt.shift === turno ? 'selected' : ''} ${isDisabled ? 'disabled style="opacity:0.4"' : ''}>${turno}</option>`;
-            });
-            selectHtml += `</select>`;
-            row.innerHTML = `
-                <button class="mini-cal-btn" onclick="abrirMiniCal(${idx})">${btnLabel}</button>
-                ${selectHtml}
-                ${isExtra ? `<button class="btn-action-opt danger" onclick="eliminarLineaDevolucion(${idx})">×</button>` : `<button class="btn-action-opt" onclick="limpiarLineaDevolucion(${idx})">⟲</button>`}
-            `;
-            container.appendChild(row);
-        });
-        document.getElementById('btnAñadirOpcion').classList.toggle('hidden', returnOptions.length >= reglas.max);
-        document.getElementById('msgLimite').classList.toggle('hidden', returnOptions.length < reglas.max);
-        actualizarEstadoPropuesta();
-    }
-
-    function limpiarLineaDevolucion(idx) { returnOptions[idx] = { date: null, shift: null }; renderizarLineasDevolucion(); }
-    function eliminarLineaDevolucion(idx) { returnOptions.splice(idx, 1); renderizarLineasDevolucion(); }
-    function abrirMiniCal(idx) { currentSelectingOptionIdx = idx; document.getElementById('miniCalModal').style.display = 'flex'; renderMiniCalendar(); }
-    function selectDateMini(date) { returnOptions[currentSelectingOptionIdx].date = date; document.getElementById('miniCalModal').style.display = 'none'; renderizarLineasDevolucion(); }
-
-    function actualizarEstadoPropuesta() {
-        const reglas = getReglas(shiftsToQuit.length);
-        const validas = returnOptions.filter(o => o.date && o.shift).length;
-        const btn = document.getElementById('btnEnviarPropuesta');
-        if (validas >= reglas.min) {
-            btn.innerText = editingRequestId ? "Guardar cambios" : "Enviar propuesta";
-            btn.disabled = false; btn.style.background = "var(--accent)"; btn.style.color = "white";
-        } else {
-            btn.innerText = `Faltan ${reglas.min - validas} opciones`;
-            btn.disabled = true; btn.style.background = "#334155"; btn.style.color = "#94a3b8";
-        }
-    }
-
-    async function enviarPropuesta() {
-        const btn = document.getElementById('btnEnviarPropuesta'); btn.disabled = true;
-        const esEdicion = editingRequestId !== null;
-        const timestamp = new Date().toLocaleString('es-ES', { 
-            day: '2-digit', month: '2-digit', year: 'numeric', 
-            hour: '2-digit', minute: '2-digit' 
-        });
-        const data = { 
-            id: editingRequestId || Date.now(), 
-            quitar: [...shiftsToQuit], 
-            devolver: returnOptions.filter(o => o.date && o.shift),
-            createdAt: timestamp
-        };
-        if (esEdicion) { 
-            const idx = pendingRequests.findIndex(r => r.id === editingRequestId); 
-            pendingRequests[idx] = data; 
-        } else { 
-            pendingRequests.unshift(data); 
-        }
-        try {
-            await db.collection("Planillas").doc(auth.currentUser.uid).set({ 
-                turnosDetallados: selectedDays, solicitudesEnCurso: pendingRequests, historial: historyChanges || []
-            });
-            let timerRedir = 3; btn.style.background = "var(--accent)"; btn.innerText = `¡Enviado! (${timerRedir}s)`;
-            const interval = setInterval(() => {
-                timerRedir--; if (timerRedir <= 0) {
-                    clearInterval(interval); 
-                    editingRequestId = null; shiftsToQuit = []; returnOptions = [];
-                    showTab('cambios');
-                    document.getElementById('cambios-step-2').classList.add('hidden');
-                    document.getElementById('cambios-step-1').classList.remove('hidden');
-                    toggleAccordion('acc-curso');
-                } else { btn.innerText = `¡Enviado! (${timerRedir}s)`; }
-            }, 1000);
-        } catch (e) { btn.innerText = "Error"; btn.disabled = false; }
-    }
-
-    function renderSolicitudesEnCurso() {
-        const container = document.getElementById('acc-curso');
-        if (pendingRequests.length === 0) {
-            container.innerHTML = `<div style="font-size:13px; color:#64748b; text-align:center; padding:20px;">No hay solicitudes activas</div>`;
-            return;
-        }
-        container.innerHTML = "";
-        pendingRequests.forEach((req, idx) => {
-            const card = document.createElement('div');
-            card.className = `pending-card ${req.isIncoherent ? 'incoherent' : ''}`;
-            const isConfirming = confirmDeleteId === req.id;
-            card.innerHTML = `
-                <div class="pending-controls">
-                    <button class="icon-btn" onclick="editarSolicitud(${req.id})" title="Editar">✎</button>
-                    ${isConfirming ? 
-                        `<button class="icon-btn confirm-delete" onclick="borrarSolicitud(${req.id})">¿Borrar?</button>` : 
-                        `<button class="icon-btn delete" onclick="prepararBorrado(${req.id})" title="Borrar">✕</button>`
-                    }
-                </div>
-                <h4>${req.isIncoherent ? '⚠️ ' : ''}Solicitud #${pendingRequests.length - idx} <span style="font-size:9px; color:#64748b;">${req.createdAt}</span></h4>
-                <div class="pending-grid">
-                    <div class="pending-section">
-                        <b style="color:var(--danger)">Me quiero quitar</b>
-                        <div class="txt-danger tab-content-shifts" style="font-weight:normal; line-height:1.4;">
-                            ${req.quitar.map(s => {
-                                const exists = (selectedDays[s.date] || []).includes(s.turno);
-                                return `<span style="${!exists ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${formatShortDate(s.date, s.turno)}</span>`;
-                            }).join('<br>')}
-                        </div>
-                    </div>
-                    <div class="pending-section">
-                        <b style="color:var(--accent)">Puedo devolver</b>
-                        <div class="txt-accent tab-content-shifts" style="font-weight:normal; line-height:1.4;">
-                            ${req.devolver.map(s => formatShortDate(s.date, s.shift)).join('<br>')}
-                        </div>
-                    </div>
-                </div>
-                <div class="pending-actions">
-                    <button class="btn-card-full" onclick="comprobarPosibilidades(${req.id})">Comprobar</button>
-                </div>
-                <div id="results-${req.id}" class="result-box hidden"></div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    function prepararBorrado(id) {
-        confirmDeleteId = id;
-        renderSolicitudesEnCurso();
-        setTimeout(() => { if (confirmDeleteId === id) { confirmDeleteId = null; renderSolicitudesEnCurso(); } }, 3000);
-    }
-
-    async function borrarSolicitud(id) {
-        confirmDeleteId = null; 
-        pendingRequests = pendingRequests.filter(r => r.id !== id);
-        await autoSavePlanilla(); 
-        verificarIncoherencias();
-        renderSolicitudesEnCurso(); 
-        renderCalendar(); 
-        prepararStep1();
-    }
-
-    function renderHistorial() {
-        const container = document.getElementById('historyList');
-        if (!historyChanges || historyChanges.length === 0) {
-            container.innerHTML = `<div style="font-size:13px; color:#64748b; text-align:center; padding:20px;">Historial vacío</div>`;
-            return;
-        }
-        container.innerHTML = "";
-        historyChanges.slice().reverse().forEach(h => {
-            const div = document.createElement('div'); div.className = 'history-item';
-            div.innerHTML = `<span class="date">${h.timestamp}</span>Cambio con <b>${h.conQuien}</b>.<br>Libras: <span class="txt-danger">${h.entregado}</span><br>Trabajas: <span class="txt-accent">${h.recibido}</span>`;
-            container.appendChild(div);
-        });
-    }
-
-    function editarSolicitud(id) {
-        const req = pendingRequests.find(r => r.id === id);
-        editingRequestId = id; shiftsToQuit = [...req.quitar];
-        returnOptions = JSON.parse(JSON.stringify(req.devolver));
-        irAStep2();
-    }
-
-    async function comprobarPosibilidades(id) {
-        const resBox = document.getElementById(`results-${id}`);
-        resBox.classList.remove('hidden'); resBox.innerHTML = "Buscando...";
-        try {
-            const miReq = pendingRequests.find(r => r.id === id);
-            const snapshot = await db.collection("Planillas").get();
-            const users = await db.collection("Usuarios").get();
-            
-            const userMap = {}; 
-            users.forEach(u => {
-                const d = u.data();
-                const apellido1 = d.apellidos ? d.apellidos.split(' ')[0] : "";
-                userMap[u.id] = `${d.nombre} ${apellido1}`;
-            });
-            
-            let matches = [];
-            snapshot.forEach(doc => {
-                if (doc.id === auth.currentUser.uid) return;
-                const susReqs = doc.data().solicitudesEnCurso || [];
-                susReqs.forEach(suReq => {
-                    const yoDoySuDeseo = miReq.quitar.filter(mq => suReq.devolver.some(sd => sd.date === mq.date && sd.shift === mq.turno));
-                    const elDaMiDeseo = suReq.quitar.filter(sq => miReq.devolver.some(md => md.date === sq.date && md.shift === sq.turno));
-                    if (yoDoySuDeseo.length && elDaMiDeseo.length) {
-                        matches.push({ uid: doc.id, name: userMap[doc.id], myOff: yoDoySuDeseo[0], myWork: elDaMiDeseo[0] });
-                    }
-                });
-            });
-
-            if (matches.length > 0) {
-                resBox.innerHTML = "<strong style='display:block; margin-bottom:8px;'>Opciones de cambio disponibles:</strong>";
-                matches.forEach(m => {
-                    const row = document.createElement('div');
-                    row.className = 'match-row';
-                    row.innerHTML = `
-                        <div class="match-text">
-                            <b>${m.name}</b> puede hacer tu <span class="txt-danger">${formatShortDate(m.myOff.date, m.myOff.turno)}</span> y tú le puedes hacer su <span class="txt-accent">${formatShortDate(m.myWork.date, m.myWork.turno)}</span>
-                        </div>
-                        <button class="btn-confirm-match" onclick="confirmarMatch(${id}, '${m.uid}', '${m.name}', '${m.myOff.date}', '${m.myOff.turno}', '${m.myWork.date}', '${m.myWork.turno}')">Confirmar este cambio</button>
-                    `;
-                    resBox.appendChild(row);
-                });
-            } else {
-                resBox.innerHTML = "No hay opciones de cambio disponibles";
-            }
-        } catch (e) { 
-            console.error(e);
-            resBox.innerHTML = "Error al comprobar coincidencias."; 
-        }
-    }
-
-    async function confirmarMatch(reqId, oUid, oName, mD, mT, oD, oT) {
-        // 1. Quitar el turno entregado
-        if(selectedDays[mD]) { 
-            selectedDays[mD] = selectedDays[mD].filter(t => t !== mT); 
-            if(!selectedDays[mD].length) delete selectedDays[mD]; 
-        }
-        
-        // 2. Añadir el turno recibido
-        if(!selectedDays[oD]) selectedDays[oD] = []; 
-        if(!selectedDays[oD].includes(oT)) selectedDays[oD].push(oT);
-        
-        // 3. Cerrar la solicitud
-        pendingRequests = pendingRequests.filter(r => r.id !== reqId);
-        
-        // 4. Guardar en historial
-        historyChanges.push({ 
-            timestamp: new Date().toLocaleString('es-ES'), 
-            conQuien: oName, 
-            entregado: formatShortDate(mD, mT), 
-            recibido: formatShortDate(oD, oT) 
-        });
-        
-        // 5. Guardar y recargar
-        try {
-            await db.collection("Planillas").doc(auth.currentUser.uid).set({ 
-                turnosDetallados: selectedDays, 
-                solicitudesEnCurso: pendingRequests, 
-                historial: historyChanges 
-            }, { merge: true });
-            
-            // Refrescar vistas
-            verificarIncoherencias();
-            renderCalendar();
-            renderSolicitudesEnCurso();
-            renderHistorial();
-            showTab('planilla');
-            alert("¡Cambio confirmado con éxito!");
-        } catch (e) {
-            alert("Error al confirmar el cambio.");
-        }
-    }
-
-    function changeMonth(d) { currentDocDate.setMonth(currentDocDate.getMonth() + d); renderCalendar(); }
-    function changeMonthMini(d) { currentMiniDate.setMonth(currentMiniDate.getMonth() + d); renderMiniCalendar(); }
-    function changeMonthSelection(d) { currentSelectionDate.setMonth(currentSelectionDate.getMonth() + d); renderCalendarSelection(); }
-
-    function actualizarRecuentoHoras() {
-        let t = 0; const y = new Date().getFullYear().toString();
-        Object.keys(selectedDays).forEach(d => { if(d.startsWith(y)) selectedDays[d].forEach(sh => t += horasTurno[sh]); });
-        document.getElementById('totalHoras').innerText = t + "h";
-    }
+    auth.onAuthStateChanged(async user => { if (user) { 
+        document.getElementById('authView').classList.add('hidden'); 
+        document.getElementById('appView').classList.remove('hidden'); 
+        document.getElementById('mainHeader').classList.remove('hidden'); 
+        await loadUserData(); 
+    } });
 
     async function loadUserData() {
         const doc = await db.collection("Planillas").doc(auth.currentUser.uid).get();
@@ -1076,38 +341,396 @@
             const data = doc.data();
             selectedDays = data.turnosDetallados || {};
             pendingRequests = data.solicitudesEnCurso || [];
-            historyChanges = data.historial || [];
+            const nombre = data.nombre || "Usuario";
+            const apellidos = data.apellidos || "";
+            const inicialApellido = apellidos ? apellidos.charAt(0).toUpperCase() + "." : "";
+            document.getElementById('userNameHeader').innerText = `${nombre} ${inicialApellido}`;
         }
-        verificarIncoherencias();
         renderCalendar();
     }
 
-    function renderMiniCalendar() {
-        const grid = document.getElementById('miniCalendarGrid'); grid.innerHTML = "";
-        const y = currentMiniDate.getFullYear(); const m = currentMiniDate.getMonth();
-        let monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentMiniDate);
-        document.getElementById('monthDisplayMini').innerText = monthName.charAt(0).toUpperCase() + monthName.slice(1).toLowerCase();
+    function setGestionMode(mode) {
+        if (activeGestionMode === mode || mode === null) {
+            activeGestionMode = null;
+            shiftsToQuit = []; returnOptions = []; isNegotiable = null; modalMode = null;
+            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar un turno";
+            document.getElementById('btnModoQuitar').classList.remove('hidden');
+            document.getElementById('btnModoQuitar').style.background = 'transparent';
+            document.getElementById('btnModoQuitar').style.color = 'var(--primary)';
+            document.getElementById('btnModoOfrecer').classList.remove('hidden');
+            document.getElementById('btnModoOfrecer').style.background = 'transparent';
+            document.getElementById('btnModoOfrecer').style.color = 'var(--primary)';
+            document.getElementById('flow-quitar').classList.add('hidden');
+            document.getElementById('flow-ofrecer').classList.add('hidden');
+            return;
+        }
+        activeGestionMode = mode;
+        const btnQ = document.getElementById('btnModoQuitar');
+        const btnO = document.getElementById('btnModoOfrecer');
+        btnQ.classList.toggle('hidden', mode === 'ofrecer');
+        btnO.classList.toggle('hidden', mode === 'quitar');
+        btnQ.style.background = mode === 'quitar' ? 'var(--primary)' : 'transparent';
+        btnQ.style.color = mode === 'quitar' ? 'white' : 'var(--primary)';
+        btnO.style.background = mode === 'ofrecer' ? 'var(--primary)' : 'transparent';
+        btnO.style.color = mode === 'ofrecer' ? 'white' : 'var(--primary)';
+        shiftsToQuit = []; returnOptions = []; isNegotiable = null; modalMode = null;
+        document.getElementById('flow-quitar').classList.toggle('hidden', activeGestionMode !== 'quitar');
+        document.getElementById('flow-ofrecer').classList.toggle('hidden', activeGestionMode !== 'ofrecer');
+        if (activeGestionMode === 'quitar') { 
+            irAStep1();
+            renderCalendarSelection(); 
+        } else if (activeGestionMode === 'ofrecer') { 
+            returnOptions = [{date:null, shift:null}]; 
+            renderizarLineasOfrecer(); 
+        }
+    }
+
+    function irAStep1() {
+        document.getElementById('cambios-step-1-interior').classList.remove('hidden');
+        document.getElementById('cambios-step-2-interior').classList.add('hidden');
+    }
+
+    function getTurnosPedidos() {
+        const set = new Set();
+        pendingRequests.forEach(req => req.quitar.forEach(q => set.add(q.id)));
+        return set;
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid'); grid.innerHTML = "";
+        const y = currentDocDate.getFullYear(), m = currentDocDate.getMonth();
+        const pedidos = getTurnosPedidos();
+        document.getElementById('monthDisplay').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentDocDate);
         ['L','M','X','J','V','S','D'].forEach(d => grid.innerHTML += `<div class="day header">${d}</div>`);
         let startOffset = (new Date(y, m, 1).getDay() === 0) ? 6 : new Date(y, m, 1).getDay() - 1;
         for (let i = 0; i < startOffset; i++) grid.innerHTML += `<div></div>`;
-        const turnosSolicitados = new Set();
-        pendingRequests.forEach(req => req.quitar.forEach(s => turnosSolicitados.add(s.id)));
-        const setQuitarActivos = new Set(shiftsToQuit.map(s => s.id));
         for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
             const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             let turnos = selectedDays[dStr] || [];
-            turnos.sort((a, b) => ordenTurnos[a] - ordenTurnos[b]);
-            let htmlInfo = "";
-            turnos.forEach((t, idx) => {
-                const id = `${dStr}_${t}`;
-                let clase = "";
-                if (setQuitarActivos.has(id)) clase = "txt-pending";
-                else if (turnosSolicitados.has(id)) clase = "txt-danger";
-                htmlInfo += `<span class="${clase}">${t}</span>${idx < turnos.length - 1 ? ', ' : ''}`;
-            });
-            grid.innerHTML += `<div class="day ${turnos.length ? 'selected' : ''}" onclick="selectDateMini('${dStr}')">${d}<span class="day-info">${htmlInfo}</span></div>`;
+            let htmlInfo = turnos.map(t => `<span class="${pedidos.has(`${dStr}_${t}`) ? 'txt-danger' : ''}">${t}</span>`).join(', ');
+            grid.innerHTML += `<div class="day ${turnos.length ? 'selected' : ''}" onclick="openShiftEditor('${dStr}')">${d}<span class="day-info">${htmlInfo}</span></div>`;
         }
     }
+
+    function renderCalendarSelection() {
+        const grid = document.getElementById('calendarSelectionGrid'); grid.innerHTML = "";
+        const y = currentSelectionDate.getFullYear(), m = currentSelectionDate.getMonth();
+        const pedidos = getTurnosPedidos();
+        document.getElementById('monthDisplaySelection').innerText = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentSelectionDate);
+        ['L','M','X','J','V','S','D'].forEach(d => grid.innerHTML += `<div class="day header">${d}</div>`);
+        let startOffset = (new Date(y, m, 1).getDay() === 0) ? 6 : new Date(y, m, 1).getDay() - 1;
+        for (let i = 0; i < startOffset; i++) grid.innerHTML += `<div></div>`;
+        for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
+            const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            let turnos = selectedDays[dStr] || [];
+            let htmlInfo = turnos.map(t => {
+                const id = `${dStr}_${t}`;
+                let colorClass = '';
+                if (shiftsToQuit.some(s => s.id === id)) colorClass = 'txt-pending';
+                else if (pedidos.has(id)) colorClass = 'txt-danger';
+                return `<span class="${colorClass}">${t}</span>`;
+            }).join(', ');
+            grid.innerHTML += `<div class="day ${turnos.length ? 'selected' : ''}" onclick="handleDaySelectionClick('${dStr}')">${d}<span class="day-info">${htmlInfo}</span></div>`;
+        }
+        if (shiftsToQuit.length > 0) {
+            const label = shiftsToQuit.length === 1 ? "1 turno" : `${shiftsToQuit.length} turnos`;
+            document.getElementById('btnModoQuitar').innerHTML = `Me quiero quitar <span style="color:var(--m-color); font-size:1.1em; margin-left:5px;">${label}</span>`;
+        } else {
+            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar un turno";
+        }
+        document.getElementById('btnContinuarCambio').classList.toggle('hidden', shiftsToQuit.length === 0);
+        document.getElementById('legendSelection').classList.toggle('hidden', shiftsToQuit.length === 0);
+    }
+
+    function handleDaySelectionClick(date) {
+        const turnosEnPlanilla = selectedDays[date] || [];
+        const pedidos = getTurnosPedidos();
+        const turnosDisponibles = turnosEnPlanilla.filter(t => !pedidos.has(`${date}_${t}`));
+        if (turnosDisponibles.length === 0) return;
+        if (turnosDisponibles.length === 1) { toggleSelectionShift(date, turnosDisponibles[0]); } 
+        else { openShiftModalSelection(date, turnosDisponibles); }
+    }
+
+    function openShiftModalSelection(date, turnosDisponibles) {
+        const container = document.getElementById('shiftOptionsContainer'); container.innerHTML = "";
+        const formattedDate = date.split('-').reverse().slice(0,2).join('/');
+        document.getElementById('modalDateTitle').innerText = `¿Qué turno te quieres quitar del día ${formattedDate}?`;
+        turnosDisponibles.forEach(t => {
+            const id = `${date}_${t}`, sel = shiftsToQuit.some(s => s.id === id);
+            const btn = document.createElement('button'); btn.className = `shift-btn`;
+            btn.innerText = t;
+            if (sel) btn.style.borderColor = 'var(--pending-color)';
+            btn.onclick = () => { toggleSelectionShift(date, t); openShiftModalSelection(date, turnosDisponibles); };
+            container.appendChild(btn);
+        });
+        document.getElementById('shiftModal').style.display = 'flex';
+    }
+
+    function toggleSelectionShift(date, t) {
+        const id = `${date}_${t}`, idx = shiftsToQuit.findIndex(s => s.id === id);
+        if (idx > -1) shiftsToQuit.splice(idx, 1); 
+        else if (shiftsToQuit.length < 5) shiftsToQuit.push({ id, date, turno: t });
+        renderCalendarSelection();
+    }
+
+    function irAStep2() {
+        document.getElementById('cambios-step-1-interior').classList.add('hidden');
+        document.getElementById('cambios-step-2-interior').classList.remove('hidden');
+        
+        modalMode = null;
+        isNegotiable = null;
+        document.getElementById('contenedorOpcionesDevolver').classList.add('hidden');
+        document.getElementById('btnAñadirOpcion').classList.add('hidden');
+        document.getElementById('flexibilidadExtra').classList.add('hidden');
+        
+        const btnC = document.getElementById('btnOpcionesConcretas');
+        const btnN = document.getElementById('btnOpcionesNegociarMain');
+        btnC.classList.remove('hidden');
+        btnN.classList.remove('hidden');
+        btnC.style.background = "#0f172a"; btnC.style.color = "#f8fafc"; btnC.style.borderColor = "#64748b";
+        btnN.style.background = "#0f172a"; btnN.style.color = "#f8fafc"; btnN.style.borderColor = "#64748b";
+
+        if (returnOptions.length === 0) {
+            returnOptions = [{date:null, shift:null}, {date:null, shift:null}, {date:null, shift:null}];
+        }
+        actualizarEstadoPropuesta(); renderizarLineasDevolucion();
+    }
+
+    function manejarAtrasStep2() {
+        if (modalMode !== null) {
+            modalMode = null;
+            isNegotiable = null;
+            document.getElementById('contenedorOpcionesDevolver').classList.add('hidden');
+            document.getElementById('btnAñadirOpcion').classList.add('hidden');
+            document.getElementById('flexibilidadExtra').classList.add('hidden');
+            
+            const btnC = document.getElementById('btnOpcionesConcretas');
+            const btnN = document.getElementById('btnOpcionesNegociarMain');
+            btnC.classList.remove('hidden');
+            btnN.classList.remove('hidden');
+            btnC.style.background = "#0f172a"; btnC.style.color = "#f8fafc"; btnC.style.borderColor = "#64748b";
+            btnN.style.background = "#0f172a"; btnN.style.color = "#f8fafc"; btnN.style.borderColor = "#64748b";
+            actualizarEstadoPropuesta();
+        } else {
+            irAStep1();
+        }
+    }
+
+    function seleccionarModalidad(mode) {
+        modalMode = mode;
+        const isConcretas = (mode === 'concretas');
+        const isNegociar = (mode === 'negociar');
+
+        document.getElementById('btnOpcionesConcretas').classList.toggle('hidden', isNegociar);
+        document.getElementById('btnOpcionesNegociarMain').classList.toggle('hidden', isConcretas);
+
+        document.getElementById('contenedorOpcionesDevolver').classList.toggle('hidden', !isConcretas);
+        document.getElementById('btnAñadirOpcion').classList.toggle('hidden', !isConcretas);
+        
+        const btnC = document.getElementById('btnOpcionesConcretas');
+        const btnN = document.getElementById('btnOpcionesNegociarMain');
+
+        btnC.style.background = isConcretas ? "var(--secondary-btn)" : "#0f172a";
+        btnC.style.color = isConcretas ? "white" : "#f8fafc";
+        btnC.style.borderColor = isConcretas ? "var(--secondary-btn)" : "#64748b";
+
+        btnN.style.background = isNegociar ? "var(--secondary-btn)" : "#0f172a";
+        btnN.style.color = isNegociar ? "white" : "#f8fafc";
+        btnN.style.borderColor = isNegociar ? "var(--secondary-btn)" : "#64748b";
+
+        isNegotiable = isNegociar ? true : null;
+        actualizarEstadoPropuesta();
+    }
+
+    function setNegotiable(val) {
+        isNegotiable = val;
+        document.getElementById('btnNegSi').className = val === true ? 'btn-neg-opt active-yes' : 'btn-neg-opt';
+        document.getElementById('btnNegNo').className = val === false ? 'btn-neg-opt active-no' : 'btn-neg-opt';
+        actualizarEstadoPropuesta();
+    }
+
+    function actualizarEstadoPropuesta() {
+        const btnSend = document.getElementById('btnEnviarPropuestaQuitar');
+        const flexBox = document.getElementById('flexibilidadExtra');
+        const negTitle = document.getElementById('negotiateTitle');
+        if(!btnSend) return;
+
+        if (modalMode === 'negociar') {
+            btnSend.disabled = false;
+            btnSend.style.background = "var(--accent)";
+            flexBox.classList.add('hidden');
+        } else if (modalMode === 'concretas') {
+            const opcionesMarcadas = returnOptions.filter(o => o.date && o.shift).length;
+            const tieneOpciones = opcionesMarcadas > 0;
+            
+            if (tieneOpciones) {
+                flexBox.classList.remove('hidden');
+                negTitle.innerText = opcionesMarcadas === 1 ? "¿Esta opción es negociable?" : "¿Estas opciones son negociables?";
+                
+                const decidido = isNegotiable !== null;
+                btnSend.disabled = !decidido;
+                btnSend.style.background = decidido ? "var(--accent)" : "#334155";
+            } else {
+                flexBox.classList.add('hidden');
+                btnSend.disabled = true;
+                btnSend.style.background = "#334155";
+                isNegotiable = null;
+                document.getElementById('btnNegSi').className = 'btn-neg-opt';
+                document.getElementById('btnNegNo').className = 'btn-neg-opt';
+            }
+        } else {
+            btnSend.disabled = true;
+            btnSend.style.background = "#334155";
+            flexBox.classList.add('hidden');
+        }
+    }
+
+    function renderizarLineasDevolucion() {
+        const container = document.getElementById('contenedorOpcionesDevolver'); container.innerHTML = "";
+        returnOptions.forEach((opt, idx) => {
+            const rowWrapper = document.createElement('div');
+            rowWrapper.style.marginBottom = "5px";
+            const row = document.createElement('div'); row.className = 'return-option-row';
+            const dateLabel = opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día";
+            let stackHtml = `<div class="action-stack"><button class="btn-action-opt" onclick="resetLinea(${idx})" title="Reset">⟳</button>`;
+            if (idx >= 3) stackHtml += `<button class="btn-action-opt" onclick="returnOptions.splice(${idx},1); renderizarLineasDevolucion(); actualizarEstadoPropuesta();" title="Borrar">🗑</button>`;
+            stackHtml += `</div>`;
+            row.innerHTML = `
+                <button class="mini-cal-btn" onclick="toggleInlineCal(${idx})">${dateLabel}</button>
+                <select style="flex:0.35; margin:0;" onchange="updateReturnShift(${idx}, this.value)">
+                    <option value="" disabled ${!opt.shift ? 'selected' : ''}>Turno</option>
+                    ${['M','T','N'].map(t => {
+                        const id = opt.date ? `${opt.date}_${t}` : '';
+                        const esDeMiPlanilla = (opt.date && (selectedDays[opt.date] || []).includes(t));
+                        const esPedido = (opt.date && getTurnosPedidos().has(id));
+                        const esElQueMeQuito = (opt.date && shiftsToQuit.some(s => s.id === id));
+                        const disabled = (esDeMiPlanilla || esPedido || esElQueMeQuito);
+                        return `<option value="${t}" ${opt.shift === t ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${t}</option>`;
+                    }).join('')}
+                </select>
+                ${stackHtml}
+            `;
+            const calDiv = document.createElement('div');
+            calDiv.id = `inline-cal-${idx}`;
+            calDiv.className = 'inline-calendar-container';
+            rowWrapper.appendChild(row);
+            rowWrapper.appendChild(calDiv);
+            container.appendChild(rowWrapper);
+            if (openInlineCalIdx === idx) {
+                setTimeout(() => calDiv.classList.add('active'), 10);
+                renderInlineCalendar(idx);
+            }
+        });
+    }
+
+    function renderInlineCalendar(idx) {
+        const div = document.getElementById(`inline-cal-${idx}`);
+        const y = currentInlineDate.getFullYear(), m = currentInlineDate.getMonth(), pedidos = getTurnosPedidos();
+        div.innerHTML = `
+            <div class="calendar-header" style="margin-bottom:8px;">
+                <button onclick="moveInlineMonth(-1, ${idx})" style="width:auto; padding:3px 8px; font-size:10px;">◀</button>
+                <span class="monthDisplayInline">${new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentInlineDate)}</span>
+                <button onclick="moveInlineMonth(1, ${idx})" style="width:auto; padding:3px 8px; font-size:10px;">▶</button>
+            </div>
+            <div class="calendar-grid">
+                ${['L','M','X','J','V','S','D'].map(d => `<div class="day header">${d}</div>`).join('')}
+                ${Array((new Date(y, m, 1).getDay() === 0) ? 6 : new Date(y, m, 1).getDay() - 1).fill('<div></div>').join('')}
+                ${Array.from({length: new Date(y, m + 1, 0).getDate()}, (_, i) => {
+                    const d = i + 1, dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, turnos = selectedDays[dStr] || [];
+                    const htmlInfo = turnos.map(t => {
+                        const id = `${dStr}_${t}`;
+                        let cls = '';
+                        if (shiftsToQuit.some(s => s.id === id)) cls = 'txt-pending';
+                        else if (pedidos.has(id)) cls = 'txt-danger';
+                        return `<span class="${cls}">${t}</span>`;
+                    }).join(', ');
+                    return `<div class="day ${turnos.length ? 'selected' : ''}" onclick="selectInlineDate(${idx}, '${dStr}')">${d}<span class="day-info">${htmlInfo}</span></div>`;
+                }).join('')}
+            </div>
+            <div class="legend" style="margin-top:8px; border-top:1px solid #334155; padding-top:5px;">
+                <div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Mi planilla</div>
+                <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Pedido</div>
+                <div class="legend-item"><div class="dot" style="background:var(--pending-color)"></div> Turnos a quitar</div>
+            </div>`;
+    }
+
+    function resetLinea(idx) { returnOptions[idx] = { date: null, shift: null }; renderizarLineasDevolucion(); actualizarEstadoPropuesta(); }
+    function updateReturnShift(idx, val) { returnOptions[idx].shift = val; actualizarEstadoPropuesta(); }
+    function toggleInlineCal(idx) { openInlineCalIdx = (openInlineCalIdx === idx) ? null : idx; if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); }
+    function selectInlineDate(idx, date) { returnOptions[idx].date = date; returnOptions[idx].shift = null; openInlineCalIdx = null; if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); actualizarEstadoPropuesta(); }
+    function moveInlineMonth(dir, idx) { currentInlineDate.setMonth(currentInlineDate.getMonth() + dir); renderInlineCalendar(idx); }
+    function añadirLineaDevolucion() { returnOptions.push({ date: null, shift: null }); renderizarLineasDevolucion(); }
+
+    function renderizarLineasOfrecer() {
+        const container = document.getElementById('contenedorOfrecer'); container.innerHTML = "";
+        returnOptions.forEach((opt, idx) => {
+            const rowWrapper = document.createElement('div');
+            const row = document.createElement('div'); row.className = 'return-option-row';
+            row.innerHTML = `
+                <button class="mini-cal-btn" onclick="toggleInlineCal(${idx})">${opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día"}</button>
+                <select style="flex:0.4; margin:0;" onchange="returnOptions[${idx}].shift = this.value; document.getElementById('btnEnviarPropuestaOfrecer').disabled = !this.value;">
+                    <option value="" disabled ${!opt.shift ? 'selected' : ''}>Turno</option>
+                    <option value="M">M</option><option value="T">T</option><option value="N">N</option>
+                </select>
+            `;
+            const calDiv = document.createElement('div');
+            calDiv.id = `inline-cal-${idx}`;
+            calDiv.className = 'inline-calendar-container';
+            rowWrapper.appendChild(row);
+            rowWrapper.appendChild(calDiv);
+            container.appendChild(rowWrapper);
+            if (openInlineCalIdx === idx) {
+                setTimeout(() => calDiv.classList.add('active'), 10);
+                renderInlineCalendar(idx);
+            }
+        });
+    }
+
+    async function enviarPropuesta() {
+        const finalReturnOptions = (modalMode === 'negociar') ? [] : returnOptions.filter(o => o.date && o.shift);
+        const data = { id: Date.now(), tipo: activeGestionMode, quitar: [...shiftsToQuit], devolver: finalReturnOptions, aNegociar: isNegotiable === true, createdAt: new Date().toLocaleString() };
+        pendingRequests.unshift(data); await autoSavePlanilla();
+        setTimeout(() => { setGestionMode(null); showTab('cambios'); toggleAccordion('acc-curso'); renderSolicitudesEnCurso(); }, 1000);
+    }
+
+    function renderSolicitudesEnCurso() {
+        const container = document.getElementById('acc-curso');
+        container.innerHTML = pendingRequests.length ? "" : `<p style="text-align:center; color:#64748b; padding:20px;">Sin solicitudes</p>`;
+        pendingRequests.forEach(req => {
+            container.innerHTML += `<div class="pending-card">
+                <h4>${req.tipo === 'quitar' ? 'Quitar Turno' : 'Ofrecimiento'} <span style="font-size:10px;">${req.createdAt}</span></h4>
+                ${req.quitar.length ? `<div class="pending-section"><b>Quitar:</b> ${req.quitar.map(q => q.turno).join(', ')}</div>` : ''}
+                <div class="pending-section"><b>${req.tipo === 'quitar' ? 'Devolver:' : 'Trabajar:'}</b> ${req.devolver.length ? req.devolver.map(d => d.shift).join(', ') : (req.aNegociar ? 'A Negociar' : '-')}</div>
+            </div>`;
+        });
+    }
+
+    function openShiftEditor(date) {
+        dateEditing = date; const turnosEnPlanilla = selectedDays[date] || [];
+        const container = document.getElementById('shiftOptionsContainer'); container.innerHTML = "";
+        ['M', 'T', 'N'].forEach(t => {
+            const btn = document.createElement('button'); btn.className = 'shift-btn'; btn.innerText = t;
+            if (turnosEnPlanilla.includes(t)) btn.style.borderColor = 'var(--primary)';
+            btn.onclick = () => { 
+                if (!selectedDays[dateEditing]) selectedDays[dateEditing] = [];
+                const idx = selectedDays[dateEditing].indexOf(t);
+                if (idx > -1) selectedDays[dateEditing].splice(idx, 1); else selectedDays[dateEditing].push(t);
+                openShiftEditor(date); 
+            };
+            container.appendChild(btn);
+        });
+        document.getElementById('shiftModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('shiftModal').style.display = 'none'; renderCalendar(); autoSavePlanilla(); }
+    async function autoSavePlanilla() { await db.collection("Planillas").doc(auth.currentUser.uid).set({ turnosDetallados: selectedDays, solicitudesEnCurso: pendingRequests }, { merge: true }); }
+    function showTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById('tab-' + tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); if(tabId === 'planilla') renderCalendar(); if(tabId === 'cambios') { setGestionMode(null); renderSolicitudesEnCurso(); } }
+    function toggleAccordion(id) { const content = document.getElementById(id); const icon = document.getElementById('icon-' + id); content.classList.toggle('hidden'); icon.classList.toggle('rotate-icon'); }
+    function changeMonth(d) { currentDocDate.setMonth(currentDocDate.getMonth() + d); renderCalendar(); }
+    function changeMonthSelection(d) { currentSelectionDate.setMonth(currentSelectionDate.getMonth() + d); renderCalendarSelection(); }
+    async function handleAuth() { const email = document.getElementById('authEmail').value; const pass = document.getElementById('authPassword').value; try { await auth.signInWithEmailAndPassword(email, pass); } catch (e) { alert("Error"); } }
+    function toggleAuth() { document.getElementById('registerFields').classList.toggle('hidden'); }
+    function logout() { auth.signOut(); location.reload(); }
 </script>
 </body>
 </html>
