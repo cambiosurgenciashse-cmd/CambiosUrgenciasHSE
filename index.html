@@ -279,10 +279,11 @@
 
                     <div id="flow-ofrecer" class="hidden">
                          <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:5px; text-align:center;">¿Qué turno o turnos te ofreces a cubrir?</p>
-                         <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 turnos por solicitud (puedes crear solicitudes ilimitadas)</p>
+                         <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 opciones por solicitud.</p>
                          
                          <div id="contenedorOfrecer"></div>
-                         
+                         <button id="btnAñadirOfrecimiento" onclick="añadirLineaOfrecer()" style="background:transparent; border:1px dashed var(--secondary-btn); color:var(--secondary-btn); margin: 0 auto 15px auto; width: 150px; padding: 8px; font-size: 12px;">+ Añadir otra opción</button>
+
                          <div class="btn-fixed-bottom">
                             <button id="btnEnviarPropuestaOfrecer" onclick="enviarPropuesta()" style="background:var(--accent);">Enviar propuesta</button>
                             <button onclick="setGestionMode(null)" style="background:transparent; color:#64748b; border:1px solid #334155; font-weight:normal; margin-top:10px;">Cancelar</button>
@@ -384,8 +385,6 @@
             renderCalendarSelection(); 
         } else if (activeGestionMode === 'ofrecer') { 
             returnOptions = [
-                {date:null, shift:null},
-                {date:null, shift:null},
                 {date:null, shift:null},
                 {date:null, shift:null},
                 {date:null, shift:null}
@@ -652,12 +651,19 @@
 
     function renderizarLineasOfrecer() {
         const container = document.getElementById('contenedorOfrecer'); container.innerHTML = "";
+        
+        document.getElementById('btnAñadirOfrecimiento').classList.toggle('hidden', returnOptions.length >= 5);
+
         returnOptions.forEach((opt, idx) => {
             const rowWrapper = document.createElement('div');
             rowWrapper.style.marginBottom = "5px";
             const row = document.createElement('div'); row.className = 'return-option-row';
             const dateLabel = opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día";
             
+            let stackHtml = `<div class="action-stack"><button class="btn-action-opt" onclick="resetLinea(${idx})" title="Reset">⟳</button>`;
+            if (idx >= 3) stackHtml += `<button class="btn-action-opt" onclick="returnOptions.splice(${idx},1); renderizarLineasOfrecer(); actualizarEstadoPropuesta();" title="Borrar">🗑</button>`;
+            stackHtml += `</div>`;
+
             row.innerHTML = `
                 <button class="mini-cal-btn" onclick="toggleInlineCal(${idx})">${dateLabel}</button>
                 <select style="flex:0.35; margin:0;" onchange="updateReturnShift(${idx}, this.value)">
@@ -670,9 +676,7 @@
                         return `<option value="${t}" ${opt.shift === t ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${t}</option>`;
                     }).join('')}
                 </select>
-                <div class="action-stack">
-                    <button class="btn-action-opt" onclick="resetLinea(${idx})" title="Reset">⟳</button>
-                </div>
+                ${stackHtml}
             `;
             const calDiv = document.createElement('div');
             calDiv.id = `inline-cal-${idx}`;
@@ -749,6 +753,13 @@
         if (returnOptions.length < maxOp) {
             returnOptions.push({ date: null, shift: null }); 
             renderizarLineasDevolucion(); 
+        }
+    }
+
+    function añadirLineaOfrecer() { 
+        if (returnOptions.length < 5) {
+            returnOptions.push({ date: null, shift: null }); 
+            renderizarLineasOfrecer(); 
         }
     }
 
