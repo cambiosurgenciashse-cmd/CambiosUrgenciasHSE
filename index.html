@@ -148,28 +148,26 @@
         }
 
         .negotiate-box {
-    background: rgba(59, 130, 246, 0.15); 
-    padding: 25px 15px; /* Aumentamos el padding interno del cuadro */
-    border-radius: 12px;
-    border: 1px solid rgba(96, 165, 250, 0.4); 
-    margin: 20px 0;
-    text-align: center;
-}
-
-.negotiate-title { 
-    font-size: 14px; 
-    margin-bottom: 35px; /* Espacio generoso entre el texto y los botones */
-    color: var(--text); 
-    font-weight: 600; 
-    display: block; /* Asegura que el margen se aplique correctamente */
-}
-
-.negotiate-btns { 
-    display: flex; 
-    gap: 30px; /* Más separación entre el botón de Sí y el de No */
-    justify-content: center; 
-}
-.btn-neg-opt { 
+            background: rgba(59, 130, 246, 0.15);
+            padding: 25px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            margin: 20px 0;
+            text-align: center;
+        }
+        .negotiate-title { 
+            font-size: 14px; 
+            margin-bottom: 35px; 
+            color: var(--text); 
+            font-weight: 600; 
+            display: block;
+        }
+        .negotiate-btns { 
+            display: flex; 
+            gap: 30px; 
+            justify-content: center; 
+        }
+        .btn-neg-opt { 
             width: 44px; height: 44px; border-radius: 10px; border: 1px solid #334155; 
             background: #1e293b; font-size: 18px; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center; color: #94a3b8;
@@ -223,14 +221,14 @@
                 <div class="accordion-header" onclick="toggleAccordion('acc-nueva')">Gestor de cambios <span id="icon-acc-nueva">▼</span></div>
                 <div id="acc-nueva" class="accordion-content hidden">
                     <div id="modoSelectors" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                        <button id="btnModoQuitar" onclick="setGestionMode('quitar')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me quiero quitar un turno</button>
-                        <button id="btnModoOfrecer" onclick="setGestionMode('ofrecer')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me ofrezco a trabajar un turno</button>
+                        <button id="btnModoQuitar" onclick="setGestionMode('quitar')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me quiero quitar uno o varios turnos</button>
+                        <button id="btnModoOfrecer" onclick="setGestionMode('ofrecer')" style="background:transparent; border:1px solid var(--primary); color:var(--primary);">Me ofrezco a trabajar uno o varios turnos</button>
                     </div>
 
                     <div id="flow-quitar" class="hidden">
                         <div id="cambios-step-1-interior">
                             <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:5px; text-align:center;">¿Qué turno/s te quieres quitar?</p>
-                            <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 turnos por solicitud (puedes crear solicitudes ilimitadas).</p>
+                            <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 turnos por solicitud (puedes crear solicitudes ilimitadas)</p>
                             <div class="calendar-container">
                                 <div class="calendar-header">
                                     <button onclick="changeMonthSelection(-1)" style="width:auto; padding:5px 10px; font-size: 10px;">◀</button>
@@ -255,6 +253,7 @@
                             <button id="btnOpcionesConcretas" onclick="seleccionarModalidad('concretas')" style="background:#0f172a; border:3px solid #64748b; color:#f8fafc; margin-bottom:12px; font-weight: bold; letter-spacing: 0.5px;">Opciones concretas</button>
                             <button id="btnOpcionesNegociarMain" onclick="seleccionarModalidad('negociar')" style="background:#0f172a; border:3px solid #64748b; color:#f8fafc; margin-bottom:12px; font-weight: bold; letter-spacing: 0.5px;">Opciones a negociar</button>
                             
+                            <p id="txtMaxOpciones" style="font-size:11px; color:#94a3b8; text-align:center; margin: 10px 0;" class="hidden"></p>
                             <div id="contenedorOpcionesDevolver" class="hidden"></div>
                             <button id="btnAñadirOpcion" class="hidden" onclick="añadirLineaDevolucion()" style="background:transparent; border:1px dashed var(--secondary-btn); color:var(--secondary-btn); margin: 0 auto 15px auto; width: 150px; padding: 8px; font-size: 12px;">+ Añadir otra opción</button>
                             
@@ -279,8 +278,11 @@
                     </div>
 
                     <div id="flow-ofrecer" class="hidden">
-                         <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:15px; text-align:center;">¿Qué turno te ofreces a cubrir?</p>
+                         <p style="font-size:14px; color:var(--primary); font-weight:bold; margin-bottom:5px; text-align:center;">¿Qué turno o turnos te ofreces a cubrir?</p>
+                         <p style="font-size:12px; color:#94a3b8; text-align:center; margin-bottom:10px;">Selecciona un máximo de 5 turnos por solicitud (puedes crear solicitudes ilimitadas)</p>
+                         
                          <div id="contenedorOfrecer"></div>
+                         
                          <div class="btn-fixed-bottom">
                             <button id="btnEnviarPropuestaOfrecer" onclick="enviarPropuesta()" style="background:var(--accent);">Enviar propuesta</button>
                             <button onclick="setGestionMode(null)" style="background:transparent; color:#64748b; border:1px solid #334155; font-weight:normal; margin-top:10px;">Cancelar</button>
@@ -353,7 +355,7 @@
         if (activeGestionMode === mode || mode === null) {
             activeGestionMode = null;
             shiftsToQuit = []; returnOptions = []; isNegotiable = null; modalMode = null;
-            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar un turno";
+            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar uno o varios turnos";
             document.getElementById('btnModoQuitar').classList.remove('hidden');
             document.getElementById('btnModoQuitar').style.background = 'transparent';
             document.getElementById('btnModoQuitar').style.color = 'var(--primary)';
@@ -376,11 +378,18 @@
         shiftsToQuit = []; returnOptions = []; isNegotiable = null; modalMode = null;
         document.getElementById('flow-quitar').classList.toggle('hidden', activeGestionMode !== 'quitar');
         document.getElementById('flow-ofrecer').classList.toggle('hidden', activeGestionMode !== 'ofrecer');
+        
         if (activeGestionMode === 'quitar') { 
             irAStep1();
             renderCalendarSelection(); 
         } else if (activeGestionMode === 'ofrecer') { 
-            returnOptions = [{date:null, shift:null}]; 
+            returnOptions = [
+                {date:null, shift:null},
+                {date:null, shift:null},
+                {date:null, shift:null},
+                {date:null, shift:null},
+                {date:null, shift:null}
+            ]; 
             renderizarLineasOfrecer(); 
         }
     }
@@ -436,7 +445,7 @@
             const label = shiftsToQuit.length === 1 ? "1 turno" : `${shiftsToQuit.length} turnos`;
             document.getElementById('btnModoQuitar').innerHTML = `Me quiero quitar <span style="color:var(--m-color); font-size:1.1em; margin-left:5px;">${label}</span>`;
         } else {
-            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar un turno";
+            document.getElementById('btnModoQuitar').innerHTML = "Me quiero quitar uno o varios turnos";
         }
         document.getElementById('btnContinuarCambio').classList.toggle('hidden', shiftsToQuit.length === 0);
         document.getElementById('legendSelection').classList.toggle('hidden', shiftsToQuit.length === 0);
@@ -482,6 +491,7 @@
         document.getElementById('contenedorOpcionesDevolver').classList.add('hidden');
         document.getElementById('btnAñadirOpcion').classList.add('hidden');
         document.getElementById('flexibilidadExtra').classList.add('hidden');
+        document.getElementById('txtMaxOpciones').classList.add('hidden');
         
         const btnC = document.getElementById('btnOpcionesConcretas');
         const btnN = document.getElementById('btnOpcionesNegociarMain');
@@ -503,6 +513,7 @@
             document.getElementById('contenedorOpcionesDevolver').classList.add('hidden');
             document.getElementById('btnAñadirOpcion').classList.add('hidden');
             document.getElementById('flexibilidadExtra').classList.add('hidden');
+            document.getElementById('txtMaxOpciones').classList.add('hidden');
             
             const btnC = document.getElementById('btnOpcionesConcretas');
             const btnN = document.getElementById('btnOpcionesNegociarMain');
@@ -525,7 +536,10 @@
         document.getElementById('btnOpcionesNegociarMain').classList.toggle('hidden', isConcretas);
 
         document.getElementById('contenedorOpcionesDevolver').classList.toggle('hidden', !isConcretas);
-        document.getElementById('btnAñadirOpcion').classList.toggle('hidden', !isConcretas);
+        document.getElementById('txtMaxOpciones').classList.toggle('hidden', !isConcretas);
+        
+        const maxOp = Math.max(10, shiftsToQuit.length * 3);
+        document.getElementById('txtMaxOpciones').innerText = `Selecciona hasta un máximo de ${maxOp} opciones.`;
         
         const btnC = document.getElementById('btnOpcionesConcretas');
         const btnN = document.getElementById('btnOpcionesNegociarMain');
@@ -540,6 +554,7 @@
 
         isNegotiable = isNegociar ? true : null;
         actualizarEstadoPropuesta();
+        renderizarLineasDevolucion();
     }
 
     function setNegotiable(val) {
@@ -550,6 +565,14 @@
     }
 
     function actualizarEstadoPropuesta() {
+        if(activeGestionMode === 'ofrecer') {
+            const btnSendOfrecer = document.getElementById('btnEnviarPropuestaOfrecer');
+            const tieneAlgo = returnOptions.some(o => o.date && o.shift);
+            btnSendOfrecer.disabled = !tieneAlgo;
+            btnSendOfrecer.style.background = tieneAlgo ? "var(--accent)" : "#334155";
+            return;
+        }
+
         const btnSend = document.getElementById('btnEnviarPropuestaQuitar');
         const flexBox = document.getElementById('flexibilidadExtra');
         const negTitle = document.getElementById('negotiateTitle');
@@ -587,6 +610,10 @@
 
     function renderizarLineasDevolucion() {
         const container = document.getElementById('contenedorOpcionesDevolver'); container.innerHTML = "";
+        const maxOp = Math.max(10, shiftsToQuit.length * 3);
+        
+        document.getElementById('btnAñadirOpcion').classList.toggle('hidden', modalMode !== 'concretas' || returnOptions.length >= maxOp);
+
         returnOptions.forEach((opt, idx) => {
             const rowWrapper = document.createElement('div');
             rowWrapper.style.marginBottom = "5px";
@@ -623,6 +650,44 @@
         });
     }
 
+    function renderizarLineasOfrecer() {
+        const container = document.getElementById('contenedorOfrecer'); container.innerHTML = "";
+        returnOptions.forEach((opt, idx) => {
+            const rowWrapper = document.createElement('div');
+            rowWrapper.style.marginBottom = "5px";
+            const row = document.createElement('div'); row.className = 'return-option-row';
+            const dateLabel = opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día";
+            
+            row.innerHTML = `
+                <button class="mini-cal-btn" onclick="toggleInlineCal(${idx})">${dateLabel}</button>
+                <select style="flex:0.35; margin:0;" onchange="updateReturnShift(${idx}, this.value)">
+                    <option value="" disabled ${!opt.shift ? 'selected' : ''}>Turno</option>
+                    ${['M','T','N'].map(t => {
+                        const id = opt.date ? `${opt.date}_${t}` : '';
+                        const esDeMiPlanilla = (opt.date && (selectedDays[opt.date] || []).includes(t));
+                        const esPedido = (opt.date && getTurnosPedidos().has(id));
+                        const disabled = (esDeMiPlanilla || esPedido);
+                        return `<option value="${t}" ${opt.shift === t ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${t}</option>`;
+                    }).join('')}
+                </select>
+                <div class="action-stack">
+                    <button class="btn-action-opt" onclick="resetLinea(${idx})" title="Reset">⟳</button>
+                </div>
+            `;
+            const calDiv = document.createElement('div');
+            calDiv.id = `inline-cal-${idx}`;
+            calDiv.className = 'inline-calendar-container';
+            rowWrapper.appendChild(row);
+            rowWrapper.appendChild(calDiv);
+            container.appendChild(rowWrapper);
+            if (openInlineCalIdx === idx) {
+                setTimeout(() => calDiv.classList.add('active'), 10);
+                renderInlineCalendar(idx);
+            }
+        });
+        actualizarEstadoPropuesta();
+    }
+
     function renderInlineCalendar(idx) {
         const div = document.getElementById(`inline-cal-${idx}`);
         const y = currentInlineDate.getFullYear(), m = currentInlineDate.getMonth(), pedidos = getTurnosPedidos();
@@ -650,45 +715,53 @@
             <div class="legend" style="margin-top:8px; border-top:1px solid #334155; padding-top:5px;">
                 <div class="legend-item"><div class="dot" style="background:var(--primary)"></div> Mi planilla</div>
                 <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> Pedido</div>
-                <div class="legend-item"><div class="dot" style="background:var(--pending-color)"></div> Turnos a quitar</div>
             </div>`;
     }
 
-    function resetLinea(idx) { returnOptions[idx] = { date: null, shift: null }; renderizarLineasDevolucion(); actualizarEstadoPropuesta(); }
-    function updateReturnShift(idx, val) { returnOptions[idx].shift = val; actualizarEstadoPropuesta(); }
-    function toggleInlineCal(idx) { openInlineCalIdx = (openInlineCalIdx === idx) ? null : idx; if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); }
-    function selectInlineDate(idx, date) { returnOptions[idx].date = date; returnOptions[idx].shift = null; openInlineCalIdx = null; if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); actualizarEstadoPropuesta(); }
+    function resetLinea(idx) { 
+        returnOptions[idx] = { date: null, shift: null }; 
+        if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer();
+        actualizarEstadoPropuesta(); 
+    }
+    
+    function updateReturnShift(idx, val) { 
+        returnOptions[idx].shift = val; 
+        actualizarEstadoPropuesta(); 
+    }
+    
+    function toggleInlineCal(idx) { 
+        openInlineCalIdx = (openInlineCalIdx === idx) ? null : idx; 
+        if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); 
+    }
+    
+    function selectInlineDate(idx, date) { 
+        returnOptions[idx].date = date; 
+        returnOptions[idx].shift = null; 
+        openInlineCalIdx = null; 
+        if(activeGestionMode === 'quitar') renderizarLineasDevolucion(); else renderizarLineasOfrecer(); 
+        actualizarEstadoPropuesta(); 
+    }
+    
     function moveInlineMonth(dir, idx) { currentInlineDate.setMonth(currentInlineDate.getMonth() + dir); renderInlineCalendar(idx); }
-    function añadirLineaDevolucion() { returnOptions.push({ date: null, shift: null }); renderizarLineasDevolucion(); }
-
-    function renderizarLineasOfrecer() {
-        const container = document.getElementById('contenedorOfrecer'); container.innerHTML = "";
-        returnOptions.forEach((opt, idx) => {
-            const rowWrapper = document.createElement('div');
-            const row = document.createElement('div'); row.className = 'return-option-row';
-            row.innerHTML = `
-                <button class="mini-cal-btn" onclick="toggleInlineCal(${idx})">${opt.date ? opt.date.split('-').reverse().join('/') : "Selecciona día"}</button>
-                <select style="flex:0.4; margin:0;" onchange="returnOptions[${idx}].shift = this.value; document.getElementById('btnEnviarPropuestaOfrecer').disabled = !this.value;">
-                    <option value="" disabled ${!opt.shift ? 'selected' : ''}>Turno</option>
-                    <option value="M">M</option><option value="T">T</option><option value="N">N</option>
-                </select>
-            `;
-            const calDiv = document.createElement('div');
-            calDiv.id = `inline-cal-${idx}`;
-            calDiv.className = 'inline-calendar-container';
-            rowWrapper.appendChild(row);
-            rowWrapper.appendChild(calDiv);
-            container.appendChild(rowWrapper);
-            if (openInlineCalIdx === idx) {
-                setTimeout(() => calDiv.classList.add('active'), 10);
-                renderInlineCalendar(idx);
-            }
-        });
+    
+    function añadirLineaDevolucion() { 
+        const maxOp = Math.max(10, shiftsToQuit.length * 3);
+        if (returnOptions.length < maxOp) {
+            returnOptions.push({ date: null, shift: null }); 
+            renderizarLineasDevolucion(); 
+        }
     }
 
     async function enviarPropuesta() {
-        const finalReturnOptions = (modalMode === 'negociar') ? [] : returnOptions.filter(o => o.date && o.shift);
-        const data = { id: Date.now(), tipo: activeGestionMode, quitar: [...shiftsToQuit], devolver: finalReturnOptions, aNegociar: isNegotiable === true, createdAt: new Date().toLocaleString() };
+        const finalOptions = returnOptions.filter(o => o.date && o.shift);
+        const data = { 
+            id: Date.now(), 
+            tipo: activeGestionMode, 
+            quitar: activeGestionMode === 'quitar' ? [...shiftsToQuit] : [], 
+            devolver: finalOptions, 
+            aNegociar: isNegotiable === true, 
+            createdAt: new Date().toLocaleString() 
+        };
         pendingRequests.unshift(data); await autoSavePlanilla();
         setTimeout(() => { setGestionMode(null); showTab('cambios'); toggleAccordion('acc-curso'); renderSolicitudesEnCurso(); }, 1000);
     }
